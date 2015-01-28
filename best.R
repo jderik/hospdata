@@ -16,12 +16,25 @@ best <- function(state, outcome) {
   
   dataread <- read.csv("outcome-of-care-measures.csv", colClasses = "character")
   
-  if(outcome !="heart attack" AND outcome !="heart failure" AND outcome !="pneumonia")
+  if(outcome !="heart attack" & outcome !="heart failure" & outcome !="pneumonia")
   { stop ("Invalid Outcome")}
   
   if (!is.element(state,dataread[,7]))
   { stop ("Invalid State") }
   
+  ##Index nos to pick value from outcome file
+  identify<-c(13,19,25)
+  names(identify)<- c("heart attack","heart failure", "pneumonia")
+  
+  ##GetSubset of Hospital data for the state
+  subsetdata<- dataread[ dataread[,"State"]==state,]
+    
+  ##Get the minimum reading
+  x<-as.double(subsetdata[,identify[outcome]])
+  minVal <-min(x,na.rm=TRUE)
+  
+  ##Array of Hospital where the mortality is min for given outcome
+  hospital<- subsetdata[ subsetdata[,identify[outcome]]==as.character(minval),2]
   
   
   
