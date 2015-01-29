@@ -35,7 +35,7 @@ function <- rankhospita(state, outcome, num="best")
   ranknumlist<- unique(dataread[dataread[,"State"]==state,identify[outcome]])
   maxrank<- max(as.double(ranknumlist),na.rm=TRUE)
   minrank<- min(as.double(ranknumlist),na.rm=TRUE)
-  
+  ranknum<-"NA"
   
   ##Check that num is 1 of 3 options
   if(num!="best" & num!="worst")
@@ -48,7 +48,7 @@ function <- rankhospita(state, outcome, num="best")
       if(length(x[,1]<=as.integer(num)))
       {
           ranknum<-as.integer(num) 
-            
+        
           
       }
       else
