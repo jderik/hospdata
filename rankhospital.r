@@ -19,19 +19,51 @@ function <- rankhospita(state, outcome, num="best")
 {
   dataread <- read.csv("outcome-of-care-measures.csv", colClasses = "character", na.strings=c("Not Available"," "))
   
+  ##Index nos to pick value from outcome file
+  identify<-c(13,19,25)
+  names(identify)<- c("heart attack","heart failure", "pneumonia")
+  
+  
+  
   if(outcome !="heart attack" & outcome !="heart failure" & outcome !="pneumonia")
   { stop ("Invalid Outcome")}
   
   if (!is.element(state,dataread[,7]))
   { stop ("Invalid State") }
   
+  ##Get the  rank values for given state and outcome 
+  ranknumlist<- unique(dataread[dataread[,"State"]==state,identify[outcome]])
+  maxrank<- max(as.double(ranknumlist),na.rm=TRUE)
+  minrank<- min(as.double(ranknumlist),na.rm=TRUE)
+  
+  
+  ##Check that num is 1 of 3 options
   if(num!="best" & num!="worst")
   {
     if(!is.na(suppressWarnings(as.integer(num))))
-    {     ranknum<-as.integer(num) }
+    {     
+      ## Picks unique hospital count from given state
+      x<-unique(dataread[dataread[,"State"]==state,"Hospital.Name"])
+      
+      if(length(x[,1]<=as.integer(num)))
+      {
+          ranknum<-as.integer(num) 
+            
+          
+      }
+      else
+      {stop("Rank number is more than no of hospitals")}
+      
+    }
     else
     { stop("Ranking is not appropriate")}
   }
   else
   { ranknum<-num}
+  
+  
+  
+  
+  
+  
 }
