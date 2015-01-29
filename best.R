@@ -14,7 +14,7 @@ best <- function(state, outcome) {
   ## Return hospital name in that state with lowest 30-day death
   ## rate
   
-  dataread <- read.csv("outcome-of-care-measures.csv", colClasses = "character")
+  dataread <- read.csv("outcome-of-care-measures.csv", colClasses = "character", na.strings=c("Not Available"," "))
   
   if(outcome !="heart attack" & outcome !="heart failure" & outcome !="pneumonia")
   { stop ("Invalid Outcome")}
@@ -31,11 +31,11 @@ best <- function(state, outcome) {
     
   ##Get the minimum reading
   x<-as.double(subsetdata[,identify[outcome]])
-  minVal <-min(x,na.rm=TRUE)
+  minVal <-which.min(x)
   
   ##Array of Hospital where the mortality is min for given outcome
-  hospital<- subsetdata[ subsetdata[,identify[outcome]]==as.character(minval),2]
+  hospital<- subsetdata[ minVal, "Hospital.Name"]
   
-  
+  hospital
   
 }
