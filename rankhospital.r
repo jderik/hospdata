@@ -23,8 +23,7 @@ rankhospital <- function(state, outcome, num="best")
   indexer<-c(11,17,23)
   names(indexer)<- c("heart attack","heart failure", "pneumonia")
   
-  print(num)
-    print(class(num))
+ 
   
   if(outcome !="heart attack" & outcome !="heart failure" & outcome !="pneumonia")
   { stop ("Invalid Outcome")}
@@ -32,11 +31,6 @@ rankhospital <- function(state, outcome, num="best")
   if (!is.element(state,dataread[,7]))
   { stop ("Invalid State") }
   
-  ##Get the  rank values for given state and outcome 
-  ranknumlist<- unique(dataread[dataread[,"State"]==state,indexer[outcome]])
-  worstrank<- max(as.double(ranknumlist),na.rm=TRUE)
-  bestrank<- min(as.double(ranknumlist),na.rm=TRUE)
-  ranknum<-"NA"
   hospital<-NA
   
   ##Check that num is 1 of 3 options
@@ -55,9 +49,15 @@ rankhospital <- function(state, outcome, num="best")
           
           ##GetSubset of Hospital data for the state
           subsetdata<- dataread[ dataread[,"State"]==state,]
-          ##Sort subset by ascending order of outcome and remove na rows
-          subsetdata2<-subsetdata[(sort(as.integer(subsetdata[,indexer[outcome]]), decreasing=FALSE, na.last=NA)),]
           
+          
+          ##Sort subset by ascending order of outcome and remove na rows
+          
+                  ## subsetdata2<-subsetdata[(sort(as.double(subsetdata[,indexer[outcome]]), decreasing=FALSE, na.last=NA)),]
+          
+          subsetdata2<-subsetdata[(order(as.double(subsetdata[[indexer[outcome]]]), subsetdata[["Hospital.Name"]], decreasing=FALSE, na.last=NA)),]
+                  ##subsetdata2<-subsetdata[!(is.na(subsetdata[,indexer[outcome]])),]   ## allocate non na data
+                  ##subsetdata2[,indexer[outcome]]<-as.double(subsetdata2[,indexer[outcome]]) ## Now get the double values
           
           ##pick the ranked hospital
           hospital<- subsetdata2[ranknum, "Hospital.Name"]
@@ -65,7 +65,7 @@ rankhospital <- function(state, outcome, num="best")
           
       }
       else
-      {stop("Rank number is more than no of hospitals")}
+      {hospital<-NA }
       
     }
     else
@@ -76,16 +76,18 @@ rankhospital <- function(state, outcome, num="best")
     if (num=="best")
       { source("best.r")
         
+        
+        ##GetSubset of Hospital data for the state
         subsetdata<- dataread[ dataread[,"State"]==state,]
         
         ##Get the minimum reading
         x<-as.double(subsetdata[,indexer[outcome]])
         minVal <-which.min(x)
         
-        ##Array of Hospital where the mortality is max for given outcome
+        ##Array of Hospital where the mortality is min for given outcome
         hospitallist<- subsetdata[ minVal, "Hospital.Name"]
-        hospital<-hospitalist[sort(hospitallist, decreasing=FALSE)]
-        
+       ## hospital<-hospitallist[sort(hospitallist, decreasing=FALSE)]
+        hospital<-hospitallist
       }
     else
       if(num=="worst")
@@ -93,23 +95,28 @@ rankhospital <- function(state, outcome, num="best")
         ##GetSubset of Hospital data for the state
         subsetdata<- dataread[ dataread[,"State"]==state,]
         
+                
+        subsetdata2<-subsetdata[(order(as.double(subsetdata[[indexer[outcome]]]), subsetdata[["Hospital.Name"]], decreasing=FALSE, na.last=NA)),]
+        
+        ##Find index of hospital from sorted list
+        ranknum<-length(subsetdata2[,indexer[outcome]])
+        
+        ##pick the ranked hospital
+        hospital<- subsetdata2[ranknum, "Hospital.Name"]
+        
+        
         ##Get the minimum reading
-        x<-as.double(subsetdata[,indexer[outcome]])
-        maxVal <-which.max(x)
+       ### x<-as.double(subsetdata[,indexer[outcome]])
+       ## maxVal <-which.max(x)
         
         ##Array of Hospital where the mortality is max for given outcome
-        hospitallist<- subsetdata[ maxVal, "Hospital.Name"]
-        hospital<-hospitalist[sort(hospitallist, decreasing=TRUE)]
+       ## hospitallist<- subsetdata[ maxVal, "Hospital.Name"]
+       ## hospital<-hospitallist[sort(hospitallist, decreasing=TRUE)]
       }
   
   }
    
-    
-    
-    
-   
-
-  
+      
   
   hospital[1]
   
